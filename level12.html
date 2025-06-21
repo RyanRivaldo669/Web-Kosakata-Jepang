@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level 12 - Bab 12</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; font-family: 'Fredoka', sans-serif; }
+    body {
+      margin: 0;
+      background: url('https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 650px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    h1 { font-size: 1.8em; margin-bottom: 20px; }
+    #question { font-size: 1.5em; margin-bottom: 20px; }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .options button {
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #ff7e5f;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    .options button:hover {
+      background: #feb47b;
+      transform: scale(1.05);
+    }
+    #result, #score, #lives {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .next-btn, .restart-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #6a11cb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Level 12 - Bab 12</h1>
+    <p id="question">Memuat soal...</p>
+    <div class="options">
+      <button onclick="checkAnswer(this)">...</button>
+      <button onclick="checkAnswer(this)">...</button>
+      <button onclick="checkAnswer(this)">...</button>
+      <button onclick="checkAnswer(this)">...</button>
+    </div>
+    <p id="result"></p>
+    <p id="score">Skor: 0</p>
+    <p id="lives">❤️ Nyawa: 3</p>
+    <button class="next-btn" onclick="nextQuestion()">➡️ Soal Selanjutnya</button>
+    <button class="restart-btn hidden" onclick="resetGame()">🔄 Ulangi</button>
+  </div>
+
+  <script>
+    const questions = [
+  { word: 'かんたん[な]（簡単[な]）', correct: 'mudah, sederhana' },
+  { word: 'ちかい（近い）', correct: 'dekat' },
+  { word: 'とおい（遠い）', correct: 'jauh' },
+  { word: 'はやい（速い、早い）', correct: 'cepat (waktu/laju)' },
+  { word: 'おそい（遅い）', correct: 'lambat, terlambat' },
+  { word: 'おおい（多い）［ひとが～］', correct: 'banyak (orang)' },
+  { word: 'すくない（少ない）［ひとが～］', correct: 'sedikit (orang)' },
+  { word: 'あたたかい（暖かい、温かい）', correct: 'hangat' },
+  { word: 'すずしい（涼しい）', correct: 'sejuk' },
+  { word: 'あまい（甘い）', correct: 'manis' },
+  { word: 'からい（辛い）', correct: 'pedas' },
+  { word: 'おもい（重い）', correct: 'berat' },
+  { word: 'かるい（軽い）', correct: 'ringan' },
+  { word: 'いい（コーヒーが～）', correct: 'lebih suka (kopi)' },
+  { word: 'きせつ（季節）', correct: 'musim' },
+  { word: 'はる（春）', correct: 'musim semi' },
+  { word: 'なつ（夏）', correct: 'musim panas' },
+  { word: 'あき（秋）', correct: 'musim gugur' },
+  { word: 'ふゆ（冬）', correct: 'musim dingin' },
+  { word: 'てんき（天気）', correct: 'cuaca' },
+  { word: 'あめ（雨）', correct: 'hujan' },
+  { word: 'ゆき（雪）', correct: 'salju' },
+  { word: 'くもり（曇り）', correct: 'berawan' },
+  { word: 'ホテル', correct: 'hotel' },
+  { word: 'くうこう（空港）', correct: 'bandara' },
+  { word: 'うみ（海）', correct: 'laut' },
+  { word: 'せかい（世界）', correct: 'dunia' },
+  { word: 'パーティー', correct: 'pesta' },
+  { word: '［お］まつり（祭り）', correct: 'festival' },
+  { word: 'しけん（試験）', correct: 'ujian' },
+  { word: 'すきやき（すき焼き）', correct: 'sukiyaki (masakan daging sapi dan sayuran)' },
+  { word: 'さしみ（刺身）', correct: 'sashimi (ikan mentah)' },
+  { word: '［お］すし（寿司）', correct: 'sushi' },
+  { word: 'てんぷら（天ぷら）', correct: 'tempura (gorengan ala Jepang)' },
+  { word: 'ぶたにく（豚肉）', correct: 'daging babi' },
+  { word: 'とりにく（鶏肉）', correct: 'daging ayam' },
+  { word: 'ぎゅうにく（牛肉）', correct: 'daging sapi' },
+  { word: 'レモン', correct: 'lemon' },
+  { word: 'いけばな（生け花）', correct: 'seni merangkai bunga' },
+  { word: 'もみじ（紅葉）', correct: 'daun musim gugur' },
+  { word: 'どちら', correct: 'yang mana (dua pilihan)' },
+  { word: 'どっち', correct: 'yang mana (dua pilihan, informal)' },
+  { word: 'いちばん（～が）', correct: 'yang paling ～' },
+  { word: 'ずっと', correct: 'jauh lebih, terus menerus' },
+  { word: 'はじめて（初めて）', correct: 'untuk pertama kali' },
+  { word: 'ただいま。', correct: 'Saya pulang (ungkapan saat pulang ke rumah)' },
+  { word: 'おかえりなさい。', correct: 'Selamat datang kembali (jawaban)' },
+  { word: 'すごいですね。', correct: 'Hebat ya!' },
+  { word: 'でも', correct: 'tetapi' },
+  { word: 'つかれました。', correct: 'Saya capek.' }
+];
+
+
+
+    let available = [...questions];
+    let current = null;
+    let score = 0;
+    let lives = 3;
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function nextQuestion() {
+      if (available.length === 0) {
+        document.getElementById("question").innerHTML = `🎉 Selesai! Skor akhir: <strong>${score}</strong>`;
+        document.querySelector(".options").innerHTML = "";
+        document.getElementById("result").textContent = "Level selesai!";
+        document.querySelector(".next-btn").classList.add("hidden");
+        document.querySelector(".restart-btn").classList.remove("hidden");
+        return;
+      }
+      current = available.splice(Math.floor(Math.random() * available.length), 1)[0];
+      document.getElementById("question").innerHTML = `Apa arti dari <strong>${current.word}</strong>?`;
+      const wrong = shuffle(questions.map(q => q.correct).filter(j => j !== current.correct)).slice(0, 3);
+      const choices = shuffle([...wrong, current.correct]);
+      const buttons = document.querySelectorAll(".options button");
+      choices.forEach((opt, i) => {
+        buttons[i].textContent = opt;
+        buttons[i].disabled = false;
+        buttons[i].style.background = '#ff7e5f';
+      });
+      document.getElementById("result").textContent = "";
+    }
+
+    function checkAnswer(btn) {
+      if (!current) return;
+      const chosen = btn.textContent;
+      if (chosen === current.correct) {
+        btn.style.background = 'green';
+        document.getElementById("result").textContent = "✅ Benar!";
+        score++;
+      } else {
+        btn.style.background = 'red';
+        document.getElementById("result").textContent = `❌ Salah! Jawaban: ${current.correct}`;
+        lives--;
+        if (lives === 0) {
+          alert("💀 Nyawa habis! Mulai ulang level.");
+          resetGame();
+          return;
+        }
+      }
+      document.getElementById("score").textContent = `Skor: ${score}`;
+      document.getElementById("lives").textContent = `❤️ Nyawa: ${lives}`;
+      document.querySelectorAll(".options button").forEach(b => b.disabled = true);
+    }
+
+    function resetGame() {
+      available = [...questions];
+      score = 0;
+      lives = 3;
+      document.getElementById("score").textContent = `Skor: ${score}`;
+      document.getElementById("lives").textContent = `❤️ Nyawa: ${lives}`;
+      document.querySelector(".options").innerHTML = `
+        <button onclick="checkAnswer(this)">...</button>
+        <button onclick="checkAnswer(this)">...</button>
+        <button onclick="checkAnswer(this)">...</button>
+        <button onclick="checkAnswer(this)">...</button>`;
+      document.querySelector(".next-btn").classList.remove("hidden");
+      document.querySelector(".restart-btn").classList.add("hidden");
+      nextQuestion();
+    }
+
+    window.onload = resetGame;
+  </script>
+</body>
+</html>

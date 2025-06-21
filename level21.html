@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level 21 - Bab 21</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; font-family: 'Fredoka', sans-serif; }
+    body {
+      margin: 0;
+      background: url('https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 650px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    h1 { font-size: 1.8em; margin-bottom: 20px; }
+    #question { font-size: 1.5em; margin-bottom: 20px; }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .options button {
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #ff7e5f;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    .options button:hover {
+      background: #feb47b;
+      transform: scale(1.05);
+    }
+    #result, #score, #lives {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .next-btn, .restart-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #6a11cb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Level 21 - Bab 21</h1>
+    <p id="question">Memuat soal...</p>
+    <div class="options">
+      <button onclick="checkAnswer(this)">...</button>
+      <button onclick="checkAnswer(this)">...</button>
+      <button onclick="checkAnswer(this)">...</button>
+      <button onclick="checkAnswer(this)">...</button>
+    </div>
+    <p id="result"></p>
+    <p id="score">Skor: 0</p>
+    <p id="lives">❤️ Nyawa: 3</p>
+    <button class="next-btn" onclick="nextQuestion()">➡️ Soal Selanjutnya</button>
+    <button class="restart-btn hidden" onclick="resetGame()">🔄 Ulangi</button>
+  </div>
+
+  <script>
+    const questions = [
+  { word: 'いいます（言います）', correct: 'mengatakan, berkata' },
+  { word: 'かちます（勝ちます）', correct: 'menang' },
+  { word: 'まけます（負けます）', correct: 'kalah' },
+  { word: 'あります［お祭りが～］', correct: 'ada, berlangsung [festival]' },
+  { word: 'やくにたちます（役に立ちます）', correct: 'berguna, membantu' },
+  { word: 'うごきます（動きます）', correct: 'bergerak' },
+  { word: 'やめます［会社を～］', correct: 'berhenti, keluar [dari perusahaan]' },
+  { word: 'きをつけます（気をつけます）', correct: 'berhati-hati' },
+  { word: 'りゅうがくします（留学します）', correct: 'belajar ke luar negeri' },
+  { word: 'むだ（な）', correct: 'sia-sia, percuma' },
+  { word: 'ふべん（な）（不便）', correct: 'tidak praktis, tidak nyaman' },
+  { word: 'おなじ（同じ）', correct: 'sama' },
+  { word: 'すごい', correct: 'hebat, luar biasa' },
+  { word: 'しゅしょう（首相）', correct: 'perdana menteri' },
+  { word: 'だいとうりょう（大統領）', correct: 'presiden (negara)' },
+  { word: 'せいじ（政治）', correct: 'politik' },
+  { word: 'ニュース', correct: 'berita' },
+  { word: 'しあい（試合）', correct: 'pertandingan' },
+  { word: 'いけん（意見）', correct: 'pendapat' },
+  { word: 'はなし（話）', correct: 'cerita, pembicaraan' },
+  { word: 'ゆめ（夢）', correct: 'mimpi' },
+  { word: 'どうぶつえん（動物園）', correct: 'kebun binatang' },
+  { word: 'ほんとうに（本当に）', correct: 'benar-benar, sungguh' },
+  { word: 'そんなに', correct: 'tidak begitu (dengan negatif)' },
+  { word: '～について', correct: 'tentang ～' },
+  { word: 'もちろん', correct: 'tentu saja' },
+  { word: 'しかたがありません（仕方がありません）', correct: 'tidak bisa diapa-apakan' },
+  { word: 'しばらくですね。', correct: 'lama tidak bertemu, ya.' },
+  { word: '～でものみませんか。', correct: 'bagaimana kalau minum ～?' },
+  { word: 'もうかえらないと…。', correct: 'saya harus pulang...' }
+];
+
+
+
+    let available = [...questions];
+    let current = null;
+    let score = 0;
+    let lives = 3;
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function nextQuestion() {
+      if (available.length === 0) {
+        document.getElementById("question").innerHTML = `🎉 Selesai! Skor akhir: <strong>${score}</strong>`;
+        document.querySelector(".options").innerHTML = "";
+        document.getElementById("result").textContent = "Level selesai!";
+        document.querySelector(".next-btn").classList.add("hidden");
+        document.querySelector(".restart-btn").classList.remove("hidden");
+        return;
+      }
+      current = available.splice(Math.floor(Math.random() * available.length), 1)[0];
+      document.getElementById("question").innerHTML = `Apa arti dari <strong>${current.word}</strong>?`;
+      const wrong = shuffle(questions.map(q => q.correct).filter(j => j !== current.correct)).slice(0, 3);
+      const choices = shuffle([...wrong, current.correct]);
+      const buttons = document.querySelectorAll(".options button");
+      choices.forEach((opt, i) => {
+        buttons[i].textContent = opt;
+        buttons[i].disabled = false;
+        buttons[i].style.background = '#ff7e5f';
+      });
+      document.getElementById("result").textContent = "";
+    }
+
+    function checkAnswer(btn) {
+      if (!current) return;
+      const chosen = btn.textContent;
+      if (chosen === current.correct) {
+        btn.style.background = 'green';
+        document.getElementById("result").textContent = "✅ Benar!";
+        score++;
+      } else {
+        btn.style.background = 'red';
+        document.getElementById("result").textContent = `❌ Salah! Jawaban: ${current.correct}`;
+        lives--;
+        if (lives === 0) {
+          alert("💀 Nyawa habis! Mulai ulang level.");
+          resetGame();
+          return;
+        }
+      }
+      document.getElementById("score").textContent = `Skor: ${score}`;
+      document.getElementById("lives").textContent = `❤️ Nyawa: ${lives}`;
+      document.querySelectorAll(".options button").forEach(b => b.disabled = true);
+    }
+
+    function resetGame() {
+      available = [...questions];
+      score = 0;
+      lives = 3;
+      document.getElementById("score").textContent = `Skor: ${score}`;
+      document.getElementById("lives").textContent = `❤️ Nyawa: ${lives}`;
+      document.querySelector(".options").innerHTML = `
+        <button onclick="checkAnswer(this)">...</button>
+        <button onclick="checkAnswer(this)">...</button>
+        <button onclick="checkAnswer(this)">...</button>
+        <button onclick="checkAnswer(this)">...</button>`;
+      document.querySelector(".next-btn").classList.remove("hidden");
+      document.querySelector(".restart-btn").classList.add("hidden");
+      nextQuestion();
+    }
+
+    window.onload = resetGame;
+  </script>
+</body>
+</html>

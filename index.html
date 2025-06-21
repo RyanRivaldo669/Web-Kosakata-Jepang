@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tebak Kosakata Jepang - Minna no Nihongo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; font-family: 'Fredoka', sans-serif; }
+    body {
+      margin: 0;
+      background: url('https://media.istockphoto.com/id/502617555/id/foto/warisan-dunia-gunung-fuji-dan-danau-shoji.jpg?s=612x612&w=0&k=20&c=G_FiFmF7Wrcbg6ivgflwZWUhz_BDmPtQzZhadvkei7g=') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      margin-top: 40px;
+      margin-bottom: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 700px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    .level-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 15px;
+      margin-top: 30px;
+    }
+    .level {
+      background: linear-gradient(to right, #42a5f5, #478ed1);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .level:hover {
+      background: linear-gradient(to right, #64b5f6, #5c9fd8);
+      transform: scale(1.05);
+    }
+    .icon-bar {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .icon-bar img {
+      width: 30px;
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="assets/WhatsApp Image 2025-06-21 at 12.43.39_a3c64c90.jpg" 
+    alt="Logo" 
+    style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover;">
+    <img src="assets/pmi.png" 
+     alt="Logo" 
+     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+    <img src="assets//WhatsApp Image 2025-06-21 at 12.43.40_35e4bf03.jpg" 
+     alt="Logo" 
+     style="width:75px; height: 75px; border-radius: 50%; object-fit: cover;">
+    <h1>🎌 Tebak Kosakata Bahasa Jepang 🎌</h1>
+    <p>Pilih level berdasarkan bab Minna no Nihongo I</p>
+
+    <div class="icon-bar">
+      <img src="https://cdn-icons-png.flaticon.com/512/197/197604.png" alt="Jepang">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="Bahasa">
+      <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" alt="Buku">
+    </div>
+
+    <div class="level-selector">
+      <!-- Level 1-25 -->
+      <script>
+        for (let i = 1; i <= 25; i++) {
+          document.write(`<div class="level" onclick="window.location.href='level${i}.html'">Bab ${i}</div>`);
+        }
+      </script>
+    </div>
+  </div>
+</body>
+</html>
